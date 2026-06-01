@@ -1,20 +1,26 @@
 VENV        = .venv
+# path to the Python executable inside the venv
 PYTHON      = $(VENV)/bin/python
+# fast package manager for Python
 UV          = uv
 CONFIG      = config.txt
 
+# these names are commands, not files
 .PHONY: install run debug clean lint lint-strict build
 
+# Set up the environment and install dependencies
 install:
 	uv venv $(VENV)
 	uv pip install --python $(PYTHON) -e ".[dev]"
 
+# .venv/bin/python a_maze_ing.py config.txt
 run:
 	$(PYTHON) a_maze_ing.py $(CONFIG)
 
 debug:
 	$(PYTHON) -m pdb a_maze_ing.py $(CONFIG)
 
+# Clear temporary files
 clean:
 	rm -rf __pycache__ mazegen/__pycache__ .mypy_cache .pytest_cache dist build
 	find . -name "*.pyc" -delete
@@ -28,5 +34,6 @@ lint-strict:
 	$(VENV)/bin/flake8 .
 	$(VENV)/bin/mypy . --strict
 
+# Build package
 build:
 	uv build

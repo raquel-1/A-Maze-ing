@@ -122,9 +122,9 @@ mazegen-1.0.0.tar.gz
 
 ### Fase 1 — Base del proyecto
 
-- [ ] Crear estructura de carpetas y ficheros
-- [ ] Crear `.gitignore`
-- [ ] Crear `Makefile` con las reglas requeridas
+- [X] Crear estructura de carpetas y ficheros
+- [X] Crear `.gitignore`
+- [X] Crear `Makefile` con las reglas requeridas
 - [ ] Implementar `config_parser.py`
 - [ ] Leer líneas `KEY=VALUE`
 - [ ] Ignorar comentarios `#`
