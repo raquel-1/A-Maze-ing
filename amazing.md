@@ -51,19 +51,21 @@ python3 a_maze_ing.py config.txt
 
 ```text
 A-Maze-ing/
-├── a_maze_ing.py          ← punto de entrada, lee config y arranca todo
-├── config.txt             ← configuración por defecto
-├── Makefile               ← install, run, debug, clean, lint
-├── README.md              ← documentación completa
-├── .gitignore             ← excluir __pycache__, .venv, dist...
-├── pyproject.toml         ← para construir el paquete con uv build
+├── a_maze_ing.py          ← orquestador
+├── config_parser.py       ← fuera de mazegen
+├── display.py             ← fuera de mazegen
+├── config.txt
+├── Makefile
+├── README.md
+├── .gitignore
+├── pyproject.toml
 └── mazegen/
-    ├── __init__.py        ← hace que mazegen sea importable como paquete
-    ├── generator.py       ← clase MazeGenerator, toda la lógica del laberinto
-    ├── pathfinder.py      ← BFS para encontrar el camino más corto
-    ├── display.py         ← renderizado en terminal + loop de interacción
-    └── config_parser.py   ← lee config.txt, valida claves y valores
+    ├── __init__.py
+    ├── generator.py       ← solo lógica pura del laberinto
+    ├── pathfinder.py      ← solo pathfinding
 ```
+
+
 ### Por qué cada fichero
 
 * **a_maze_ing.py** — Solo orquesta. Llama al parser, crea el generador, llama al display. Poca lógica aquí.
@@ -77,6 +79,29 @@ A-Maze-ing/
 * **mazegen/pathfinder.py** — BFS que recibe el laberinto y devuelve el camino más corto de entrada a salida.
 * **mazegen/display.py** — Dibuja el laberinto en terminal con ASCII, gestiona las teclas para interactuar.
 * **mazegen/config_parser.py** — Lee el `config.txt`, valida que estén todas las claves, lanza errores claros si algo falla.
+
+```text
+a_maze_ing.py arranca
+        │
+        ▼
+config_parser lee config.txt
+        │
+        ├── si algo falla → imprime error y el programa para
+        │
+        └── si todo ok → devuelve diccionario limpio
+                {
+                    "width": 20,
+                    "height": 15,
+                    "entry": (0, 0),
+                    "exit": (19, 14),
+                    "output_file": "maze.txt",
+                    "perfect": True
+                }
+                        │
+                        ▼
+                MazeGenerator recibe ese diccionario
+                y ya puede generar el laberinto
+```
 
 ---
 
