@@ -1,0 +1,8 @@
+[flake8]
+exclude = 
+    venv,
+    .venv,
+    matrix_env,
+    __pycache__,
+    .mypy_cache
+max-line-length = 79
