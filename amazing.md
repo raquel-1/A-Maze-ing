@@ -150,20 +150,20 @@ mazegen-1.0.0.tar.gz
 - [X] Crear estructura de carpetas y ficheros
 - [X] Crear `.gitignore`
 - [X] Crear `Makefile` con las reglas requeridas
-- [ ] Implementar `config_parser.py`
-- [ ] Leer líneas `KEY=VALUE`
-- [ ] Ignorar comentarios `#`
-- [ ] Validar parámetros obligatorios
-- [ ] Gestionar todos los errores posibles
+- [X] Implementar `config_parser.py`
+- [X] Leer líneas `KEY=VALUE`
+- [X] Ignorar comentarios `#`
+- [X] Validar parámetros obligatorios
+- [X] Gestionar todos los errores posibles
 
 #### Casos de error a probar
 
-- [ ] Clave obligatoria ausente
-- [ ] Formato incorrecto
-- [ ] Booleano inválido
-- [ ] Coordenadas fuera de rango
-- [ ] Anchura o altura inválidas
-- [ ] Entrada y salida mal definidas
+- [X] Clave obligatoria ausente
+- [X] Formato incorrecto
+- [X] Booleano inválido
+- [X] Coordenadas fuera de rango
+- [X] Anchura o altura inválidas
+- [X] Entrada y salida mal definidas
 
 ---
 

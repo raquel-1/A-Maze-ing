@@ -21,7 +21,7 @@ def parse_config(filepath: str) -> dict[str, object]:
                 if '=' not in line:
                     raise ValueError(f"Invalid format (missing '='): {line}")
                 k, v = line.split('=', 1)
-                k = k.strip().upper()
+                k = k.strip()
                 v = v.strip()
                 if k not in VALID_KEYS:
                     raise ValueError(f"Unknown key: {k}")
@@ -102,7 +102,7 @@ def _validate_coords(
     """parse -> validate coordinates"""
     parts = value.split(',')
     if len(parts) != 2:
-        raise ValueError(f"{key} must be in format x,y, got: {value}")
+        raise ValueError(f"{key} must be in format x,y got: {value}")
     try:
         x, y = int(parts[0].strip()), int(parts[1].strip())
     except ValueError:
