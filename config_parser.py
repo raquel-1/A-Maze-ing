@@ -14,13 +14,15 @@ def parse_config(filepath: str) -> dict[str, object]:
                 line = line.strip()
                 if not line or line.startswith('#'):
                     continue
+                if '#' in line:
+                    line = line.split('#')[0].strip()
+                    if not line:
+                        continue
                 if '=' not in line:
                     raise ValueError(f"Invalid format (missing '='): {line}")
                 k, v = line.split('=', 1)
                 k = k.strip().upper()
                 v = v.strip()
-                if '#' in v:
-                    v = v.split('#')[0].strip()
                 if k not in VALID_KEYS:
                     raise ValueError(f"Unknown key: {k}")
                 if k in raw:
@@ -40,29 +42,31 @@ def _validate(raw: dict[str, str]) -> dict[str, object]:
     config: dict[str, object] = {}
     # WIDTH
     try:
-        config["width"] = int(raw["WIDTH"])
+        width = int(raw["WIDTH"])
     except ValueError:
         raise ValueError(f"WIDTH must be an integer, got: {raw['WIDTH']}")
-    if config["width"] <= 0:
+    if width <= 0:
         raise ValueError(
             f"WIDTH must be greater than 0, got: {config['width']}"
         )
+    config["width"] = width
     # HEIGHT
     try:
-        config["height"] = int(raw["HEIGHT"])
+        height = int(raw["HEIGHT"])
     except ValueError:
         raise ValueError(f"HEIGHT must be an integer, got: {raw['HEIGHT']}")
-    if config["height"] <= 0:
+    if height <= 0:
         raise ValueError(
             f"HEIGHT must be greater than 0, got: {config['height']}"
         )
+    config["height"] = height
     # -ENTRY-
     config["entry"] = _validate_coords(
-        "ENTRY", raw["ENTRY"], config["width"], config["height"]
+        "ENTRY", raw["ENTRY"], width, height
     )
     # -EXIT-
     config["exit"] = _validate_coords(
-        "EXIT", raw["EXIT"], config["width"], config["height"]
+        "EXIT", raw["EXIT"], width, height
     )
     if config["entry"] == config["exit"]:
         raise ValueError("ENTRY and EXIT must be different cells")
