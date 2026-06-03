@@ -33,7 +33,7 @@ class MazeGenerator:
             [False for _ in range(width)] for _ in range(height)
         ]
         # (dx, dy, bit_wall, bit_oposite)
-        self.directions = {
+        self.my_directions = {
             "N": (0, -1, 1, 4),
             "E": (1, 0, 2, 8),
             "S": (0, 1, 4, 1),
@@ -56,8 +56,46 @@ class MazeGenerator:
         return self.my_map
 
     def _use_machete(self, start_x: int, start_y: int) -> None:
-        """stack of explored"""
-        pass
+        """stack(backpack) of explored"""
+        backpack: list[tuple[int, int]] = [(start_x, start_y)]
+        self.my_visited[start_y][start_x] = True
+
+        while len(backpack) > 0:
+            # my current cell, the last cell
+            actual_x, actual_y = backpack[-1]
+            # ("N", "E", "S", "W")
+            dir_list = list(self.my_directions.keys())
+            # roll the dice seed to shuffle
+            self.my_rand_seed.shuffle(dir_list)
+
+            can_continue = False
+            # test each address in the list
+            for name_dir in dir_list:
+                # (dx, dy, bit_wall, bit_oposite)
+                dx, dy, bit_wall, bit_oposite = self.my_directions[name_dir]
+                # calculate the next macheting
+                next_x = actual_x + dx
+                next_y = actual_y + dy
+                # not go off the map
+                if 0 <= next_x < self.width and 0 <= next_y < self.height:
+                    # not visited
+                    if not self.my_visited[next_y][next_x]:
+                        # lead the way
+                        self.my_map[actual_y][actual_x] = (
+                            self.my_map[actual_y][actual_x] - bit_wall
+                        )
+                        self.my_map[next_y][next_x] = (
+                            self.my_map[next_y][next_x] - bit_oposite
+                        )
+                        # visited territory
+                        self.my_visited[next_y][next_x] = True
+                        backpack.append((next_x, next_y))
+                        can_continue = True
+                        # moved, stop looking for more addresses
+                        break
+            # step back
+            if not can_continue:
+                backpack.pop()
 
     def _42_walls(self) -> None:
         start_x = (self.width - 7) // 2
@@ -82,7 +120,6 @@ class MazeGenerator:
         for x, y in four + two:
             x_real_pos = start_x + x
             y_real_pos = start_y + y
-            self.my_map[y_real_pos][x_real_pos] = 15
             self.my_visited[y_real_pos][x_real_pos] = True
 
     def _more_paths(self) -> None:
