@@ -169,16 +169,16 @@ mazegen-1.0.0.tar.gz
 
 ### Fase 2 — Generador de laberintos
 
-- [ ] Elegir algoritmo de generación
-- [ ] Entender Recursive Backtracker
-- [ ] Implementar clase `MazeGenerator`
-- [ ] Crear cuadrícula con paredes
-- [ ] Generar usando una seed reproducible
-- [ ] Implementar modo `PERFECT=True`
-- [ ] Garantizar un único camino entre dos celdas
+- [X] Elegir algoritmo de generación
+- [X] Entender Recursive Backtracker
+- [X] Implementar clase `MazeGenerator`
+- [X] Crear cuadrícula con paredes
+- [X] Generar usando una seed reproducible
+- [X] Implementar modo `PERFECT=True`
+- [X] Garantizar un único camino entre dos celdas
 - [ ] Aplicar restricción de zonas 3×3 abiertas
-- [ ] Dibujar el patrón `"42"` usando celdas cerradas
-- [ ] Validar consistencia entre paredes vecinas
+- [X] Dibujar el patrón `"42"` usando celdas cerradas
+- [X] Validar consistencia entre paredes vecinas
 
 ---
 
@@ -243,7 +243,7 @@ mazegen-1.0.0.tar.gz
 
 - [ ] Animación de construcción del laberinto
 - [ ] Animación de resolución
-- [ ] Soporte para múltiples algoritmos
+- [X] Soporte para múltiples algoritmos
 - [ ] Estadísticas de generación
 - [ ] Exportación visual adicional
 
