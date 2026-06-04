@@ -53,9 +53,34 @@ class MazeGenerator:
             self._use_prim(self.entry[0], self.entry[1])
 
         if not self.perfect:
-            self._more_paths()
+            self._more_paths_braiding()
 
         return self.my_map
+
+    def _42_walls(self) -> None:
+        start_x = (self.width - 7) // 2
+        start_y = (self.height - 5) // 2
+
+        four: list[tuple[int, int]] = [
+            (0, 0),
+            (0, 1),
+            (0, 2), (1, 2), (2, 2),
+            (2, 3),
+            (2, 4)
+        ]
+
+        two: list[tuple[int, int]] = [
+            (4, 0), (5, 0), (6, 0),
+            (6, 1),
+            (4, 2), (5, 2), (6, 2),
+            (4, 3),
+            (4, 4), (5, 4), (6, 4)
+        ]
+
+        for x, y in four + two:
+            x_real_pos = start_x + x
+            y_real_pos = start_y + y
+            self.my_visited[y_real_pos][x_real_pos] = True
 
     def _use_machete(self, start_x: int, start_y: int) -> None:
         """stack(backpack) of explored"""
@@ -99,31 +124,6 @@ class MazeGenerator:
             if not can_continue:
                 backpack.pop()
 
-    def _42_walls(self) -> None:
-        start_x = (self.width - 7) // 2
-        start_y = (self.height - 5) // 2
-
-        four: list[tuple[int, int]] = [
-            (0, 0),
-            (0, 1),
-            (0, 2), (1, 2), (2, 2),
-            (2, 3),
-            (2, 4)
-        ]
-
-        two: list[tuple[int, int]] = [
-            (4, 0), (5, 0), (6, 0),
-            (6, 1),
-            (4, 2), (5, 2), (6, 2),
-            (4, 3),
-            (4, 4), (5, 4), (6, 4)
-        ]
-
-        for x, y in four + two:
-            x_real_pos = start_x + x
-            y_real_pos = start_y + y
-            self.my_visited[y_real_pos][x_real_pos] = True
-
     def _use_prim(self, start_x: int, start_y: int) -> None:
         """Prim algorithm (bonus)"""
         # first cell visited
@@ -157,5 +157,83 @@ class MazeGenerator:
             for nueva_dir in self.my_directions.keys():
                 drop_oil.append((next_x, next_y, nueva_dir))
 
-    def _more_paths(self) -> None:
-        pass
+    def _more_paths_braiding(self) -> None:
+        """"remove some walls to create imperfect maze"""
+        candidates: list[tuple[int, int, str]] = []
+        for y in range(self.height):
+            for x in range(self.width):
+                # ignore 42
+                if self.my_map[y][x] == 15:
+                    continue
+                # E
+                if (x + 1) < self.width:
+                    if self.my_map[y][x + 1] != 15:
+                        # show bit value = 2
+                        if self.my_map[y][x] & 2:
+                            candidates.append((x, y, "E"))
+                # S
+                if (y + 1) < self.height:
+                    if self.my_map[y + 1][x] != 15:
+                        # show bit value = 2
+                        if self.my_map[y][x] & 4:
+                            candidates.append((x, y, "S"))
+
+        self.my_rand_seed.shuffle(candidates)
+        walls_to_break = int(len(candidates) * 0.10)
+        for candidate in candidates:
+            x, y, s_e = candidate
+            if s_e == "E":
+                next_x = x + 1
+                _, _, bit_wall, bit_oposite = self.my_directions["E"]
+                self.my_map[y][x] -= bit_wall
+                self.my_map[y][next_x] -= bit_oposite
+
+                if self._check_3x3_square():
+                    # delete change
+                    self.my_map[y][x] += bit_wall
+                    self.my_map[y][next_x] += bit_oposite
+                else:
+                    # okk wall stay broken
+                    walls_to_break -= 1
+                    if walls_to_break == 0:
+                        break
+
+            if s_e == "S":
+                next_y = y + 1
+                _, _, bit_wall, bit_oposite = self.my_directions["S"]
+                self.my_map[y][x] -= bit_wall
+                self.my_map[next_y][x] -= bit_oposite
+
+                if self._check_3x3_square():
+                    # delete change
+                    self.my_map[y][x] += bit_wall
+                    self.my_map[next_y][x] += bit_oposite
+                else:
+                    # okk wall stay broken
+                    walls_to_break -= 1
+                    if walls_to_break == 0:
+                        break
+
+    def _check_3x3_square(self) -> bool:
+        for y in range(1, self.height - 1):
+            for x in range(1, self.width - 1):
+                # is no empty center
+                if self.my_map[y][x] != 0:
+                    continue
+                else:
+                    # N E S W
+                    if (
+                        (self.my_map[y - 1][x] & 2) == 0 and
+                        (self.my_map[y - 1][x] & 8) == 0
+                    ) and (
+                        (self.my_map[y][x + 1] & 1) == 0 and
+                        (self.my_map[y][x + 1] & 4) == 0
+                    ) and (
+                        (self.my_map[y + 1][x] & 2) == 0 and
+                        (self.my_map[y + 1][x] & 8) == 0
+                    ) and (
+                        (self.my_map[y][x - 1] & 1) == 0 and
+                        (self.my_map[y][x - 1] & 4) == 0
+                    ):
+                        return True
+        return False

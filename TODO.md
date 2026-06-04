@@ -176,7 +176,7 @@ mazegen-1.0.0.tar.gz
 - [X] Generar usando una seed reproducible
 - [X] Implementar modo `PERFECT=True`
 - [X] Garantizar un único camino entre dos celdas
-- [ ] Aplicar restricción de zonas 3×3 abiertas
+- [X] Aplicar restricción de zonas 3×3 abiertas
 - [X] Dibujar el patrón `"42"` usando celdas cerradas
 - [X] Validar consistencia entre paredes vecinas
 
@@ -251,25 +251,6 @@ mazegen-1.0.0.tar.gz
 
 ## Orden recomendado
 
-### 1. Parser de configuración
-
-Primero asegúrate de que puedes:
-
-- Leer el fichero
-- Validar todos los parámetros
-- Gestionar errores correctamente
-
-### 2. Generador de laberintos
-
-Es la parte más compleja del proyecto:
-
-- Generación aleatoria
-- Modo perfecto
-- Restricción 3×3
-- Patrón "42"
-
-Conviene implementarla cuanto antes.
-
 ### 3. Pathfinding
 
 Una vez generado el laberinto:
@@ -306,4 +287,3 @@ La dificultad real está en combinar correctamente:
 - Exportación correcta en hexadecimal.
 
 La visualización y el empaquetado suelen ser las partes más mecánicas.
-
