@@ -3,26 +3,22 @@
 from typing import cast
 import config_parser
 from mazegen.generator import MazeGenerator
-# Importamos las funciones del pathfinder (asumiendo que está en pathfinder.py)
 from mazegen.pathfinder import find_short_path
+from mazegen.exporter import export_maze_to_file
 
 
 def main() -> None:
-    # 1. Leemos los datos reales de tu config.txt usando tu parser
+    #  read a .txt file using parse
     config = config_parser.parse_config("config.txt")
 
-    # 2. Forzamos los tipos con 'cast' para que mypy se quede tranquilo
     width = cast(int, config["width"])
     height = cast(int, config["height"])
     entry = cast(tuple[int, int], config["entry"])
-    exit_cell = cast(tuple[int, int], config["exit"])  # Evitamos usar 'exit' que es palabra reservada
+    exit_cell = cast(tuple[int, int], config["exit"])
     perfect = cast(bool, config["perfect"])
-
-    # La seed puede ser int o None, usamos config.get por si no existe
     seed = cast(int | None, config.get("seed"))
 
-    # 3. Le pasamos los datos ya limpios y tipados al generador
-    generador = MazeGenerator(
+    generator = MazeGenerator(
         width=width,
         height=height,
         entry=entry,
@@ -31,54 +27,52 @@ def main() -> None:
         seed=seed,
     )
 
-    # 4. Encendemos el machete para que cave la selva
-    mapa = generador.machete()
+    map = generator.machete()
+    path_coordinates = find_short_path(map, entry, exit_cell)
+    road_set = set(path_coordinates)
 
-    # 5. Calculamos el camino más corto usando el pathfinder
-    camino_coordenadas = find_short_path(mapa, entry, exit_cell)
-    # Lo convertimos a set para buscar eficientemente dentro del bucle
-    conjunto_camino = set(camino_coordenadas)
-
-    # 6. ¡Pintamos el resultado con el camino incluido!
-    print(f"\n--- LABERINTO GENERADO (Seed: {generador.seed}) ---")
-
-    # Dibuja el borde exterior del Norte (el techo del laberinto)
+    print(f"\n--- GENERATED MAZE (Seed: {generator.seed}) ---")
+    # ceiling of the maze
     print(" " + "_" * (width * 2 - 1))
 
-    # Usamos enumerate para saber en qué fila (y) y columna (x) estamos
-    for y, fila in enumerate(mapa):
-        # Cada fila empieza con la pared exterior del Oeste
-        linea = "|"
+    for y, row in enumerate(map):
+        line = "|"
 
-        for x, celda in enumerate(fila):
+        for x, cell in enumerate(row):
             # bit 0=N, bit 1=E, bit 2=S, bit 3=W
-            tiene_este = bool(celda & 2)
-            tiene_sur = bool(celda & 4)
-
-            if celda == 15:
-                linea += "██"  # celda del 42, totalmente cerrada
+            has_e = bool(cell & 2)
+            has_s = bool(cell & 4)
+            # 42
+            if cell == 15:
+                line += "██"
             else:
-                # Comprobamos si esta celda actual (x, y) pertenece al camino corto
-                es_camino = (x, y) in conjunto_camino
+                is_path = (x, y) in road_set
 
-                # 1. Pintamos el suelo (Sur)
-                # Si es camino y NO tiene pared abajo, ponemos un punto o espacio, 
-                # pero si tiene pared abajo, respetamos el suelo '_'
-                espacio_suelo = "_" if tiene_sur else ("*" if es_camino else " ")
-                linea += espacio_suelo
-
-                # 2. Pintamos la pared lateral (Este)
-                if tiene_este:
-                    linea += "|"
+                if has_s:
+                    line += "_"
+                elif is_path:
+                    line += "*"
                 else:
-                    # Si no hay pared al Este y la celda de abajo tiene suelo, arrastramos el '_'
-                    if tiene_sur:
-                        linea += "_"
-                    # Si no hay suelo abajo, pero la celda actual es del camino, podemos dejarlo libre
-                    else:
-                        linea += " "
+                    line += " "
 
-        print(linea)
+                if has_e:
+                    line += "|"
+                else:
+                    if has_s:
+                        line += "_"
+                    else:
+                        line += " "
+
+        print(line)
+
+    export_maze_to_file(
+        filename="output_maze.txt",
+        entry=entry,
+        exit_cell=exit_cell,
+        maze_map=map,
+        path=path_coordinates
+    )
+    print("[INFO] File 'output_maze.txt' exported successfully.")
 
 
 if __name__ == "__main__":

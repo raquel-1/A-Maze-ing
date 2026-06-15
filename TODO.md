@@ -184,12 +184,12 @@ mazegen-1.0.0.tar.gz
 
 ### Fase 3 — Pathfinding y output
 
-- [ ] Implementar `pathfinder.py`
-- [ ] Encontrar el camino más corto mediante BFS
-- [ ] Generar fichero de salida
-- [ ] Exportar laberinto en hexadecimal
-- [ ] Guardar entrada y salida
-- [ ] Guardar el camino calculado
+- [X] Implementar `pathfinder.py`
+- [X] Encontrar el camino más corto mediante BFS
+- [X] Generar fichero de salida
+- [X] Exportar laberinto en hexadecimal
+- [X] Guardar entrada y salida
+- [X] Guardar el camino calculado
 - [ ] Validar usando `output_validator.py`
 
 ---

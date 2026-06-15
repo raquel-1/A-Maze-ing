@@ -4,11 +4,12 @@ PYTHON      = $(VENV)/bin/python
 # fast package manager for Python
 UV          = uv
 CONFIG      = config.txt
+OUTPUT      = output_maze.txt
 
 # these names are commands, not files
-.PHONY: install run debug clean lint lint-strict build
+.PHONY: install run debug clean lint lint-strict build validate
 
-# Set up the environment and install dependencies
+# set up the environment and install dependencies
 install:
 	uv venv $(VENV)
 	uv pip install --python $(PYTHON) -e ".[dev]"
@@ -17,13 +18,18 @@ install:
 run:
 	$(PYTHON) a_maze_ing.py $(CONFIG)
 
+validate:
+	@echo "Running the output validator"
+	$(PYTHON) output_validator.py $(OUTPUT)
+
 debug:
 	$(PYTHON) -m pdb a_maze_ing.py $(CONFIG)
 
-# Clear temporary files
+# Clear temporary files (añadido que borre el TXT de salida al limpiar)
 clean:
 	rm -rf __pycache__ mazegen/__pycache__ .mypy_cache .pytest_cache dist build
 	find . -name "*.pyc" -delete
+	rm -f $(OUTPUT)
 
 lint:
 	$(VENV)/bin/flake8 .

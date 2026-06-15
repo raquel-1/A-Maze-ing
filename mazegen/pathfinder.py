@@ -76,7 +76,8 @@ def find_short_path(
 
 
 def convert_path_to_directions(path: List[Tuple[int, int]]) -> str:
-    """Convert a list of coordinates into a string of cardinal directions (N, E, S, W).
+    """
+    Convert a list of coord into a string of cardinal directions (N, E, S, W)
 
     Args:
         path: List of (x, y) tuples representing the path.
@@ -88,14 +89,14 @@ def convert_path_to_directions(path: List[Tuple[int, int]]) -> str:
         return ""
 
     string_path: List[str] = []
-    
+
     for i in range(len(path) - 1):
         curr_x, curr_y = path[i]
         next_x, next_y = path[i + 1]
-        
+
         dx: int = next_x - curr_x
         dy: int = next_y - curr_y
-        
+
         if dy == -1:
             string_path.append("N")
         elif dx == 1:
