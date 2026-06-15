@@ -17,6 +17,7 @@ def main() -> None:
     exit_cell = cast(tuple[int, int], config["exit"])
     perfect = cast(bool, config["perfect"])
     seed = cast(int | None, config.get("seed"))
+    output_file = cast(str, config["output_file"])
 
     generator = MazeGenerator(
         width=width,
@@ -66,13 +67,13 @@ def main() -> None:
         print(line)
 
     export_maze_to_file(
-        filename="output_maze.txt",
+        filename=output_file,
         entry=entry,
         exit_cell=exit_cell,
         maze_map=map,
         path=path_coordinates
     )
-    print("[INFO] File 'output_maze.txt' exported successfully.")
+    print(f"[INFO] File '{output_file}' exported successfully.")
 
 
 if __name__ == "__main__":
