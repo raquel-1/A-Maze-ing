@@ -34,6 +34,7 @@ build/
 .idea/
 *.swp
 *.swo
+*.whl
 
 # ==========================================
 # PROJECT OUTPUTS
