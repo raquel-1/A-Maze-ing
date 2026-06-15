@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Module for maze pathfinding using BFS algorithm.
-
-Adheres to PEP 257 and passes strict mypy type checking.
-"""
-
 from collections import deque
 from typing import Dict, List, Set, Tuple
 
@@ -13,16 +8,8 @@ def find_short_path(
     entry: Tuple[int, int],
     exit_cell: Tuple[int, int]
 ) -> List[Tuple[int, int]]:
-    """Find the shortest path through the maze using BFS.
-
-    Args:
-        maze_map: 2D grid where each cell is an integer encoding walls.
-        entry: (x, y) starting cell coordinates.
-        exit_cell: (x, y) destination cell coordinates.
-
-    Returns:
-        List of (x, y) tuples from entry to exit (inclusive),
-        or an empty list if no path exists.
+    """
+    Find the shortest path through the maze using BFS
     """
     if entry == exit_cell:
         return [entry]
