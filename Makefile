@@ -2,7 +2,6 @@ VENV        = .venv
 # path to the Python executable inside the venv
 PYTHON      = $(VENV)/bin/python
 # fast package manager for Python
-UV          = uv
 CONFIG      = config.txt
 OUTPUT      = output_maze.txt
 
@@ -12,6 +11,7 @@ OUTPUT      = output_maze.txt
 # set up the environment and install dependencies
 install:
 	uv venv $(VENV)
+	uv pip install --python $(PYTHON) mlx-2.2-py3-none-any.whl
 	uv pip install --python $(PYTHON) -e ".[dev]"
 
 # .venv/bin/python a_maze_ing.py config.txt
