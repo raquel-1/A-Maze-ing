@@ -16,7 +16,7 @@ def export_maze_to_file(
     """
     with open(filename, "w", encoding="utf-8") as f:
         for row in maze_map:
-            linea_hex = "".join(format(cell, "x") for cell in row)
+            linea_hex = "".join(format(cell, "X") for cell in row)
             f.write(linea_hex + "\n")
 
         f.write("\n")
