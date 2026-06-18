@@ -16,23 +16,25 @@ class MazeDisplay:
         # 1. Define your list of available palettes (Lists of dictionaries)
         self.palettes: List[Dict[str, int]] = [
             # Index 0: Classic Palette
+            # white black green red cian darkgrey
             {
-                "wall": 0xFFFFFF,      # Blanco
-                "floor": 0x000000,     # Negro
-                "entry": 0x00FF00,     # Verde
-                "exit": 0xFF0000,      # Rojo
-                "path": 0x00FFFF,      # Cian
-                "secret_42": 0x444444  # Gris oscuro
+                "wall": 0xFFFFFF,
+                "floor": 0x000000,
+                "entry": 0x00FF00,
+                "exit": 0xFF0000,
+                "path": 0x00FFFF,
+                "secret_42": 0x444444
             },
 
             # Index 1: Cyberpunk (Neon Palette)
+            # BrightMagenta Verydarkpurple neongreen electricblue darkpurple
             {
-                "wall": 0xFF00FF,      # Magenta brillante
-                "floor": 0x110022,     # Morado muy oscuro
-                "entry": 0x00FF00,     # Verde Neón
-                "exit": 0xFFFF00,      # Amarillo Neón
-                "path": 0x00FFFF,      # Azul Eléctrico
-                "secret_42": 0x330033  # Morado oscuro
+                "wall": 0xFF00FF,
+                "floor": 0x110022,
+                "entry": 0x00FF00,
+                "exit": 0xFFFF00,
+                "path": 0x00FFFF,
+                "secret_42": 0x330033
             }
         ]
 
