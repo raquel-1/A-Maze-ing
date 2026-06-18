@@ -44,20 +44,20 @@ class MazeGenerator:
         """Build a maze in the jungle"""
 
         if self.width >= 9 and self.height >= 7:
-            self._42_walls()
-            self._use_machete(self.entry[0], self.entry[1])
+            self.__42_walls()
+            self.__use_machete(self.entry[0], self.entry[1])
         else:
             print(
                 "[INFO] Size too small. '42' pattern omitted from rendering."
             )
-            self._use_prim(self.entry[0], self.entry[1])
+            self.__use_prim(self.entry[0], self.entry[1])
 
         if not self.perfect:
-            self._more_paths_braiding()
+            self.__more_paths_braiding()
 
         return self.my_map
 
-    def _42_walls(self) -> None:
+    def __42_walls(self) -> None:
         start_x = (self.width - 7) // 2
         start_y = (self.height - 5) // 2
 
@@ -82,7 +82,7 @@ class MazeGenerator:
             y_real_pos = start_y + y
             self.my_visited[y_real_pos][x_real_pos] = True
 
-    def _use_machete(self, start_x: int, start_y: int) -> None:
+    def __use_machete(self, start_x: int, start_y: int) -> None:
         """stack(backpack) of explored"""
         backpack: list[tuple[int, int]] = [(start_x, start_y)]
         self.my_visited[start_y][start_x] = True
@@ -124,7 +124,7 @@ class MazeGenerator:
             if not can_continue:
                 backpack.pop()
 
-    def _use_prim(self, start_x: int, start_y: int) -> None:
+    def __use_prim(self, start_x: int, start_y: int) -> None:
         """Prim algorithm (bonus)"""
         # first cell visited
         self.my_visited[start_y][start_x] = True
@@ -157,7 +157,7 @@ class MazeGenerator:
             for nueva_dir in self.my_directions.keys():
                 drop_oil.append((next_x, next_y, nueva_dir))
 
-    def _more_paths_braiding(self) -> None:
+    def __more_paths_braiding(self) -> None:
         """"remove some walls to create imperfect maze"""
         candidates: list[tuple[int, int, str]] = []
         for y in range(self.height):
@@ -188,7 +188,7 @@ class MazeGenerator:
                 self.my_map[y][x] -= bit_wall
                 self.my_map[y][next_x] -= bit_oposite
 
-                if self._check_3x3_square():
+                if self.__check_3x3_square():
                     # delete change
                     self.my_map[y][x] += bit_wall
                     self.my_map[y][next_x] += bit_oposite
@@ -204,7 +204,7 @@ class MazeGenerator:
                 self.my_map[y][x] -= bit_wall
                 self.my_map[next_y][x] -= bit_oposite
 
-                if self._check_3x3_square():
+                if self.__check_3x3_square():
                     # delete change
                     self.my_map[y][x] += bit_wall
                     self.my_map[next_y][x] += bit_oposite
@@ -214,7 +214,7 @@ class MazeGenerator:
                     if walls_to_break == 0:
                         break
 
-    def _check_3x3_square(self) -> bool:
+    def __check_3x3_square(self) -> bool:
         for y in range(1, self.height - 1):
             for x in range(1, self.width - 1):
                 # is no empty center

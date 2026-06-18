@@ -51,10 +51,10 @@ def parse_config(filepath: str) -> dict[str, object]:
             f"{red}Missing required keys: {', '.join(missing)}{reset}"
         )
 
-    return _validate(raw)
+    return __validate(raw)
 
 
-def _validate(raw: dict[str, str]) -> dict[str, object]:
+def __validate(raw: dict[str, str]) -> dict[str, object]:
     """convert -> validate values"""
     red = "\033[91m"
     reset = "\033[0m"
@@ -85,11 +85,11 @@ def _validate(raw: dict[str, str]) -> dict[str, object]:
         )
     config["height"] = height
     # -ENTRY-
-    config["entry"] = _validate_coords(
+    config["entry"] = __validate_coords(
         "ENTRY", raw["ENTRY"], width, height
     )
     # -EXIT-
-    config["exit"] = _validate_coords(
+    config["exit"] = __validate_coords(
         "EXIT", raw["EXIT"], width, height
     )
     if config["entry"] == config["exit"]:
@@ -124,7 +124,7 @@ def _validate(raw: dict[str, str]) -> dict[str, object]:
     return config
 
 
-def _validate_coords(
+def __validate_coords(
     key: str, value: str, width: int, height: int
 ) -> tuple[int, int]:
     """parse -> validate coordinates"""
