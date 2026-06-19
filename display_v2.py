@@ -27,24 +27,45 @@ class MazeDisplay:
         )
 
         self.palettes: List[Dict[str, int]] = [
-            # Index 0: Classic Palette
             {
-                "wall": 0xFFFFFF,
-                "floor": 0x000000,
-                "entry": 0x00FF00,
-                "exit": 0xFF0000,
-                "path": 0x00FFFF,
-                "secret_42": 0x444444
+                "wall": 0x471f71,
+                "floor": 0xffe619,
+                "entry": 0x0cc06c,
+                "exit": 0xfffad2,
+                "path": 0x59c6f2,
+                "secret_42": 0xef819b
             },
-            # Index 1: Cyberpunk (Neon Palette)
-            # BrightMagenta Verydarkpurple neongreen electricblue darkpurple
             {
-                "wall": 0xFF00FF,
-                "floor": 0x110022,
-                "entry": 0x00FF00,
-                "exit": 0xFFFF00,
-                "path": 0x00FFFF,
-                "secret_42": 0x330033
+                "wall": 0x23362b,
+                "floor": 0x1bb28c,
+                "entry": 0xe86a58,
+                "exit": 0xfed45b,
+                "path": 0x9bc7c5,
+                "secret_42": 0xefeeea
+            },
+            {
+                "wall": 0x16222f,
+                "floor": 0x6c3fe8,
+                "entry": 0xb64bad,
+                "exit": 0xb64bad,
+                "path": 0xc2c7cb,
+                "secret_42": 0xffffff
+            },
+            {
+                "wall": 0xffc24b,
+                "floor": 0x0e606b,
+                "entry": 0x1697a6,
+                "exit": 0xfff4f1,
+                "path": 0xffb3ae,
+                "secret_42": 0xf47068
+            },
+            {
+                "wall": 0xff7300,
+                "floor": 0x00fff7,
+                "entry": 0x8400ff,
+                "exit": 0x90fe00,
+                "path": 0xff00a1,
+                "secret_42": 0x0015ff
             }
         ]
 
@@ -70,9 +91,10 @@ class MazeDisplay:
         self.palette_index: int = 0
         self.show_path: bool = False
 
-        cell_size = 40
-        window_w = self.width * cell_size
-        window_h = self.height * cell_size
+        self.cell_size = 25
+        self.wall_thickness = 5
+        window_w = self.width * self.cell_size
+        window_h = self.height * self.cell_size
 
         self.mlx: Any = mlx.Mlx()
         self.mlx_ptr: Any = self.mlx.mlx_init()
@@ -93,8 +115,8 @@ class MazeDisplay:
         """
         current_palette = self.palettes[self.palette_index]
 
-        cell_size = 40
-        wall_thickness = 4
+        cell_size = self.cell_size
+        wall_thickness = self.wall_thickness
 
         # Create image buffer for fast rendering
         img = self.mlx.mlx_new_image(
@@ -105,9 +127,14 @@ class MazeDisplay:
 
         def put_pixel(x: int, y: int, color: int) -> None:
             offset = y * size_line + x * bytes_per_pixel
-            data[offset + 2] = color & 0xFF
+            # BGRA
+            # blue
+            data[offset + 0] = color & 0xFF
+            # green
             data[offset + 1] = (color >> 8) & 0xFF
-            data[offset + 0] = (color >> 16) & 0xFF
+            # red
+            data[offset + 2] = (color >> 16) & 0xFF
+            # alpha
             data[offset + 3] = 0xFF
 
         # Loop through each row (Y) and each column (X)
