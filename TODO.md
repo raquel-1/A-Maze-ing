@@ -208,8 +208,7 @@ mazegen-1.0.0.tar.gz
 
 - [X] MLX
 - [X] Crear ventana gráfica
-- [ ] CREAR MENU EN LA VENTANA GRAFICA
-- [ ] MOSTRAR VARIOS CAMINOS EN IMPERFECTO
+- [X] CREAR MENU EN LA VENTANA GRAFICA
 
 ---
 
@@ -240,10 +239,7 @@ mazegen-1.0.0.tar.gz
 
 ### Bonus
 
-- [ ] Animación de construcción del laberinto
-- [ ] Animación de resolución
 - [X] Soporte para múltiples algoritmos
-- [ ] Estadísticas de generación
 - [ ] Exportación visual adicional
 
 ---

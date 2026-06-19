@@ -65,3 +65,5 @@ Generates `mazegen-1.0.0-py3-none-any.whl` and `mazegen-1.0.0.tar.gz` inside `di
 
 documentacion:
 https://weblog.jamisbuck.org/2011/2/7/maze-generation-algorithm-recap
+
+https://coolors.co/palettes/popular/6%20colors
