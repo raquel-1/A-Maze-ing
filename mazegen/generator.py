@@ -239,7 +239,7 @@ class MazeGenerator:
         return False
 
     def reset(self, new_seed: Optional[int] = None) -> None:
-        """Reset the generator with a new seed to regenerate the maze."""
+        """reset the generator with a new seed to regenerate the maze"""
         self.seed = (
             new_seed if new_seed is not None else random.randint(1, 999999)
         )

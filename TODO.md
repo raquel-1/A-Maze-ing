@@ -206,11 +206,10 @@ mazegen-1.0.0.tar.gz
 - [X] Mostrar/Ocultar solución
 - [X] Cambiar colores
 
-#### Opcional
-
 - [X] MLX
 - [X] Crear ventana gráfica
 - [ ] CREAR MENU EN LA VENTANA GRAFICA
+- [ ] MOSTRAR VARIOS CAMINOS EN IMPERFECTO
 
 ---
 
