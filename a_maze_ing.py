@@ -6,9 +6,10 @@ from mazegen.generator import MazeGenerator
 from pathfinder import find_short_path
 from mazegen.exporter import export_maze_to_file
 
+from display_v2 import MazeDisplay
+
 
 def main() -> None:
-    #  read a .txt file using parse
     config = config_parser.parse_config("config.txt")
 
     width = cast(int, config["width"])
@@ -30,41 +31,6 @@ def main() -> None:
 
     map = generator.machete()
     path_coordinates = find_short_path(map, entry, exit_cell)
-    road_set = set(path_coordinates)
-
-    print(f"\n--- GENERATED MAZE (Seed: {generator.seed}) ---")
-    # ceiling of the maze
-    print(" " + "_" * (width * 2 - 1))
-
-    for y, row in enumerate(map):
-        line = "|"
-
-        for x, cell in enumerate(row):
-            # bit 0=N, bit 1=E, bit 2=S, bit 3=W
-            has_e = bool(cell & 2)
-            has_s = bool(cell & 4)
-            # 42
-            if cell == 15:
-                line += "██"
-            else:
-                is_path = (x, y) in road_set
-
-                if has_s:
-                    line += "_"
-                elif is_path:
-                    line += "*"
-                else:
-                    line += " "
-
-                if has_e:
-                    line += "|"
-                else:
-                    if has_s:
-                        line += "_"
-                    else:
-                        line += " "
-
-        print(line)
 
     export_maze_to_file(
         filename=output_file,
@@ -74,6 +40,16 @@ def main() -> None:
         path=path_coordinates
     )
     print(f"[INFO] File '{output_file}' exported successfully.")
+
+    print("[INFO] Opening MiniLibX graphical display...")
+    display = MazeDisplay(  # noqa: F841
+        width=width,
+        height=height,
+        entry=entry,
+        exit=exit_cell,
+        grid=map,
+        generator=generator
+    )
 
 
 if __name__ == "__main__":

@@ -196,21 +196,21 @@ mazegen-1.0.0.tar.gz
 
 ### Fase 4 — Visualización
 
-- [ ] Dibujar el laberinto en terminal (ASCII)
-- [ ] Mostrar entrada y salida
-- [ ] Mostrar camino solución
-- [ ] Crear bucle interactivo
+- [X] Mostrar entrada y salida
+- [X] Mostrar camino solución
+- [X] Crear bucle interactivo
 
 #### Acciones interactivas
 
-- [ ] Regenerar laberinto
-- [ ] Mostrar/Ocultar solución
-- [ ] Cambiar colores
+- [X] Regenerar laberinto
+- [X] Mostrar/Ocultar solución
+- [X] Cambiar colores
 
 #### Opcional
 
-- [ ] Migrar a MLX
-- [ ] Crear ventana gráfica
+- [X] MLX
+- [X] Crear ventana gráfica
+- [ ] CREAR MENU EN LA VENTANA GRAFICA
 
 ---
 
@@ -273,17 +273,3 @@ Dejar para el final:
 - `pyproject.toml`
 - `.whl`
 - `.tar.gz`
-
----
-
-## Punto crítico del proyecto
-
-La dificultad real está en combinar correctamente:
-
-- Generación aleatoria reproducible mediante seed.
-- Laberinto perfecto cuando se solicite.
-- Restricción de ausencia de áreas abiertas 3×3.
-- Dibujo del patrón `"42"` usando celdas cerradas.
-- Exportación correcta en hexadecimal.
-
-La visualización y el empaquetado suelen ser las partes más mecánicas.
