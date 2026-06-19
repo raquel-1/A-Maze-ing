@@ -44,14 +44,12 @@ def find_short_path(
             return path
 
         for dx, dy, bit_wall in directions.values():
-            # If the bit is set, the wall is closed -> cannot pass
-            if maze_map[actual_y][actual_x] & bit_wall:
-                continue
-
             next_x, next_y = actual_x + dx, actual_y + dy
 
-            # Bounds check
             if not (0 <= next_x < width and 0 <= next_y < height):
+                continue
+
+            if maze_map[actual_y][actual_x] & bit_wall:
                 continue
 
             if (next_x, next_y) not in visited:
