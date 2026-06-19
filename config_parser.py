@@ -84,6 +84,12 @@ def __validate(raw: dict[str, str]) -> dict[str, object]:
             f"{red}HEIGHT must be greater than 0, got: {height}{reset}"
         )
     config["height"] = height
+    # MAX 100X100
+    if width > 100 or height > 100:
+        raise ValueError(
+            f"{red}WIDTH and HEIGHT must be <= 100 for safe rendering, "
+            f"got: {width}x{height}{reset}"
+        )
     # -ENTRY-
     config["entry"] = __validate_coords(
         "ENTRY", raw["ENTRY"], width, height
