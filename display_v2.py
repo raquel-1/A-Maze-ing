@@ -3,7 +3,7 @@
 from typing import Any, Dict, List, Tuple
 import mlx
 from mazegen.generator import MazeGenerator
-from pathfinder import find_short_path
+from path_finder import find_short_path
 
 
 class MazeDisplay:

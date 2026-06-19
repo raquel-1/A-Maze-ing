@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pathfinder import convert_path_to_directions
+from path_finder import convert_path_to_directions
 
 
 def export_maze_to_file(
