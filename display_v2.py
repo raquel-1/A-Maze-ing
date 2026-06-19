@@ -87,14 +87,15 @@ class MazeDisplay:
             (start_x + 4, start_y + 4), (start_x + 5, start_y + 4),
             (start_x + 6, start_y + 4)
         ]
-
+        self.has_42: bool = self.width >= 9 and self.height >= 7
         self.palette_index: int = 0
         self.show_path: bool = False
 
         self.cell_size = 25
         self.wall_thickness = 5
+        self.menu_height = 90
         window_w = self.width * self.cell_size
-        window_h = self.height * self.cell_size
+        window_h = self.height * self.cell_size + self.menu_height
 
         self.mlx: Any = mlx.Mlx()
         self.mlx_ptr: Any = self.mlx.mlx_init()
@@ -155,7 +156,7 @@ class MazeDisplay:
                 # show hide path
                 elif self.show_path and (x_cell, y_cell) in self.shortest_path:
                     floor_color = current_palette["path"]
-                elif (x_cell, y_cell) in self.four + self.two:
+                elif self.has_42 and (x_cell, y_cell) in self.four + self.two:
                     floor_color = current_palette["secret_42"]
                 else:
                     floor_color = current_palette["floor"]
@@ -214,6 +215,24 @@ class MazeDisplay:
         self.mlx.mlx_destroy_image(self.mlx_ptr, img)
         self.mlx.mlx_do_sync(self.mlx_ptr)
 
+        # deaw menu
+        text_color = 0xFFFFFF
+        base_y = self.height * cell_size + 8
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y, text_color, "ESC: quit"
+        )
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y + 16, text_color, "1: colors"
+        )
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y + 32, text_color, "P: path"
+        )
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y + 48, text_color, "R: regen"
+        )
+
+        self.mlx.mlx_do_sync(self.mlx_ptr)
+
     def handle_keyboard(self, key: int, param: Any) -> int:
         """
         Event Handler: Changes the palette index or toggles path visibility.
@@ -222,7 +241,7 @@ class MazeDisplay:
         if key == 65307 or key == 27:
             self.mlx.mlx_loop_exit(self.mlx_ptr)
 
-        # 3 change colors
+        # 1 change colors
         elif key == 49:
             self.palette_index = (self.palette_index + 1) % len(self.palettes)
             print(f"Palette changed to index: {self.palette_index}")
