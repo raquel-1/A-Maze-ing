@@ -237,3 +237,16 @@ class MazeGenerator:
                     ):
                         return True
         return False
+
+    def reset(self, new_seed: Optional[int] = None) -> None:
+        """Reset the generator with a new seed to regenerate the maze."""
+        self.seed = (
+            new_seed if new_seed is not None else random.randint(1, 999999)
+        )
+        self.my_rand_seed = random.Random(self.seed)
+        self.my_map = [
+            [15 for _ in range(self.width)] for _ in range(self.height)
+        ]
+        self.my_visited = [
+            [False for _ in range(self.width)] for _ in range(self.height)
+        ]
