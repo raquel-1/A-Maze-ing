@@ -28,44 +28,44 @@ class MazeDisplay:
 
         self.palettes: List[Dict[str, int]] = [
             {
-                "wall": 0x471f71,
-                "floor": 0xffe619,
-                "entry": 0x0cc06c,
-                "exit": 0xfffad2,
-                "path": 0x59c6f2,
-                "secret_42": 0xef819b
+                "wall":      0x711F47FF,
+                "floor":     0x19E6FFFF,
+                "entry":     0x6CC00CFF,
+                "exit":      0xD2FAFFFF,
+                "path":      0xF2C659FF,
+                "secret_42": 0x9B81EFFF
             },
             {
-                "wall": 0x23362b,
-                "floor": 0x1bb28c,
-                "entry": 0xe86a58,
-                "exit": 0xfed45b,
-                "path": 0x9bc7c5,
-                "secret_42": 0xefeeea
+                "wall":      0x2B3623FF,
+                "floor":     0x8CB21BFF,
+                "entry":     0x586AE8FF,
+                "exit":      0x5BD4FEFF,
+                "path":      0xC5C79BFF,
+                "secret_42": 0xEAEEEFFF
             },
             {
-                "wall": 0x16222f,
-                "floor": 0x6c3fe8,
-                "entry": 0xb64bad,
-                "exit": 0xb64bad,
-                "path": 0xc2c7cb,
-                "secret_42": 0xffffff
+                "wall":      0x2F2216FF,
+                "floor":     0xE83F6CFF,
+                "entry":     0xAD4BB6FF,
+                "exit":      0xAD4BB6FF,
+                "path":      0xCBC7C2FF,
+                "secret_42": 0xFFFFFFFF
             },
             {
-                "wall": 0xffc24b,
-                "floor": 0x0e606b,
-                "entry": 0x1697a6,
-                "exit": 0xfff4f1,
-                "path": 0xffb3ae,
-                "secret_42": 0xf47068
+                "wall":      0x4BC2FFFF,
+                "floor":     0x6B600EFF,
+                "entry":     0xA6971AFF,
+                "exit":      0xF1F4FFFF,
+                "path":      0xAEB3FFFF,
+                "secret_42": 0x6870F4FF
             },
             {
-                "wall": 0xff7300,
-                "floor": 0x00fff7,
-                "entry": 0x8400ff,
-                "exit": 0x90fe00,
-                "path": 0xff00a1,
-                "secret_42": 0x0015ff
+                "wall":      0x00F773FF,
+                "floor":     0xF7FF00FF,
+                "entry":     0xFF0084FF,
+                "exit":      0x00FE90FF,
+                "path":      0x00A1FFFF,
+                "secret_42": 0xFF1500FF
             }
         ]
 
@@ -128,15 +128,14 @@ class MazeDisplay:
 
         def put_pixel(x: int, y: int, color: int) -> None:
             offset = y * size_line + x * bytes_per_pixel
-            # BGRA
-            # blue
-            data[offset + 0] = color & 0xFF
-            # green
-            data[offset + 1] = (color >> 8) & 0xFF
-            # red
-            data[offset + 2] = (color >> 16) & 0xFF
-            # alpha
-            data[offset + 3] = 0xFF
+            # blue (B)
+            data[offset + 0] = (color >> 24) & 0xFF
+            # green (G)
+            data[offset + 1] = (color >> 16) & 0xFF
+            # red (R)
+            data[offset + 2] = (color >> 8) & 0xFF
+            # alpha (A)
+            data[offset + 3] = color & 0xFF
 
         # Loop through each row (Y) and each column (X)
         for y_cell in range(self.height):
