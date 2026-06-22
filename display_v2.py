@@ -61,11 +61,11 @@ class MazeDisplay:
             },
             {
                 "wall":      0x00F773FF,
-                "floor":     0xF7FF00FF,
+                "floor":     0xFF1500FF,
                 "entry":     0xFF0084FF,
                 "exit":      0x00FE90FF,
                 "path":      0x00A1FFFF,
-                "secret_42": 0xFF1500FF
+                "secret_42": 0xF7FF00FF
             }
         ]
 
@@ -105,7 +105,6 @@ class MazeDisplay:
 
         self.draw_maze()
         self.mlx.mlx_expose_hook(self.win, self.draw_maze, None)
-        self.mlx.mlx_hook(self.win, 17, 0, self.on_close, None)
         self.mlx.mlx_hook(self.win, 33, 0, self.on_close, None)
         self.mlx.mlx_key_hook(self.win, self.handle_keyboard, None)
         self.mlx.mlx_loop(self.mlx_ptr)
