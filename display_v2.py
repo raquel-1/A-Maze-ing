@@ -69,6 +69,8 @@ class MazeDisplay:
             }
         ]
 
+        self.is_drawing: bool = False
+
         start_x = (self.width - 7) // 2
         start_y = (self.height - 5) // 2
 
@@ -113,6 +115,10 @@ class MazeDisplay:
         """
         Render function: Gets the active palette and draws the maze.
         """
+        if self.is_drawing:
+            return
+        self.is_drawing = True
+
         current_palette = self.palettes[self.palette_index]
 
         cell_size = self.cell_size
@@ -231,13 +237,19 @@ class MazeDisplay:
 
         self.mlx.mlx_do_sync(self.mlx_ptr)
 
+        self.is_drawing = False
+
     def handle_keyboard(self, key: int, param: Any) -> int:
         """
         Event Handler: Changes the palette index or toggles path visibility.
         """
+        if self.is_drawing:
+            return 0
+
         # ESC
         if key == 65307 or key == 27:
             self.mlx.mlx_loop_exit(self.mlx_ptr)
+            return 0
 
         # 1 change colors
         elif key == 49:
