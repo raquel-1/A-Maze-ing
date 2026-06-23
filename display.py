@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Set, Tuple
 import mlx
 from mazegen.generator import MazeGenerator
 from path_finder import find_short_path
@@ -93,8 +93,18 @@ class MazeDisplay:
         self.palette_index: int = 0
         self.show_path: bool = False
 
-        self.cell_size = 25
-        self.wall_thickness = 5
+        # scaling based on grid dimension to fit screen
+        if self.width > 70 or self.height > 70:
+            self.cell_size = 10
+            self.wall_thickness = 2
+        elif self.width >= 50 or self.height >= 50:
+            max_dim = max(self.width, self.height)
+            self.cell_size = max(6, 750 // max_dim)
+            self.wall_thickness = max(1, self.cell_size // 4)
+        else:
+            self.cell_size = 20
+            self.wall_thickness = 3
+
         self.menu_height = 90
         window_w = self.width * self.cell_size
         window_h = self.height * self.cell_size + self.menu_height
@@ -104,6 +114,10 @@ class MazeDisplay:
         self.win: Any = self.mlx.mlx_new_window(
             self.mlx_ptr, window_w, window_h, "A-Maze-ing"
         )
+
+        # retain references securely to prevent flickering states
+        self.img: Any = None
+        self.secret_set: Set[Tuple[int, int]] = set(self.four + self.two)
 
         self.draw_maze()
         self.mlx.mlx_expose_hook(self.win, self.draw_maze, None)
@@ -124,11 +138,14 @@ class MazeDisplay:
         cell_size = self.cell_size
         wall_thickness = self.wall_thickness
 
-        # Create image buffer for fast rendering
-        img = self.mlx.mlx_new_image(
+        # build the new buffer completely hidden backstage
+        new_img = self.mlx.mlx_new_image(
             self.mlx_ptr, self.width * cell_size, self.height * cell_size
         )
-        data, bpp, size_line, _ = self.mlx.mlx_get_data_addr(img)
+        data: bytearray
+        bpp: int
+        size_line: int
+        data, bpp, size_line, _ = self.mlx.mlx_get_data_addr(new_img)
         bytes_per_pixel = bpp // 8
 
         def put_pixel(x: int, y: int, color: int) -> None:
@@ -142,7 +159,10 @@ class MazeDisplay:
             # alpha (A)
             data[offset + 3] = color & 0xFF
 
-        # Loop through each row (Y) and each column (X)
+        # O(1) set storage to guarantee zero-lag loop cycles
+        path_set: Set[Tuple[int, int]] = set(self.shortest_path)
+
+        # loop through each row (Y) and each column (X)
         for y_cell in range(self.height):
             for x_cell in range(self.width):
 
@@ -158,9 +178,9 @@ class MazeDisplay:
                 elif self.exit == (x_cell, y_cell):
                     floor_color = current_palette["exit"]
                 # show hide path
-                elif self.show_path and (x_cell, y_cell) in self.shortest_path:
+                elif self.show_path and (x_cell, y_cell) in path_set:
                     floor_color = current_palette["path"]
-                elif self.has_42 and (x_cell, y_cell) in self.four + self.two:
+                elif self.has_42 and (x_cell, y_cell) in self.secret_set:
                     floor_color = current_palette["secret_42"]
                 else:
                     floor_color = current_palette["floor"]
@@ -173,7 +193,7 @@ class MazeDisplay:
                 # CHECK WALLS USING BITWISE AND (&)
                 wall_color = current_palette["wall"]
 
-                # North Wall (Bit 0 -> Value 1)
+                # N (bit 0 -> value 1)
                 if cell_value & 1:
                     for t in range(wall_thickness):
                         for px in range(
@@ -181,7 +201,7 @@ class MazeDisplay:
                         ):
                             put_pixel(px, y_pixel_start + t, wall_color)
 
-                # East Wall (Bit 1 -> Value 2)
+                # E (bit 1 -> value 2)
                 if cell_value & 2:
                     for t in range(wall_thickness):
                         for py in range(
@@ -193,7 +213,7 @@ class MazeDisplay:
                             )
                             put_pixel(x_pos, py, wall_color)
 
-                # South Wall (Bit 2 -> Value 4)
+                # S (bit 2 -> value 4)
                 if cell_value & 4:
                     for t in range(wall_thickness):
                         for px in range(
@@ -205,7 +225,7 @@ class MazeDisplay:
                             )
                             put_pixel(px, y_pos, wall_color)
 
-                # West Wall (Bit 3 -> Value 8)
+                # W (bit 3 -> value 8)
                 if cell_value & 8:
                     for t in range(wall_thickness):
                         for py in range(
@@ -213,13 +233,15 @@ class MazeDisplay:
                         ):
                             put_pixel(x_pixel_start + t, py, wall_color)
 
-        # Push the whole image to window at once
-        self.mlx.mlx_clear_window(self.mlx_ptr, self.win)
-        self.mlx.mlx_put_image_to_window(self.mlx_ptr, self.win, img, 0, 0)
-        self.mlx.mlx_destroy_image(self.mlx_ptr, img)
-        self.mlx.mlx_do_sync(self.mlx_ptr)
+        # push image instantly
+        self.mlx.mlx_put_image_to_window(self.mlx_ptr, self.win, new_img, 0, 0)
 
-        # deaw menu
+        # destruct previous iteration references -> free memory leak
+        if self.img is not None:
+            self.mlx.mlx_destroy_image(self.mlx_ptr, self.img)
+        self.img = new_img
+
+        # draw menu
         text_color = 0xFFFFFF
         base_y = self.height * cell_size + 8
         self.mlx.mlx_string_put(
@@ -236,19 +258,18 @@ class MazeDisplay:
         )
 
         self.mlx.mlx_do_sync(self.mlx_ptr)
-
         self.is_drawing = False
 
     def handle_keyboard(self, key: int, param: Any) -> int:
         """
         Event Handler: Changes the palette index or toggles path visibility.
         """
-        if self.is_drawing:
-            return 0
-
         # ESC
         if key == 65307 or key == 27:
             self.mlx.mlx_loop_exit(self.mlx_ptr)
+            return 0
+
+        if self.is_drawing:
             return 0
 
         # 1 change colors
@@ -263,7 +284,7 @@ class MazeDisplay:
             print(f"Show path state: {self.show_path}")
             self.draw_maze()
 
-        # R regenerate maze
+        # R o r regenerate maze
         elif key == 114:
             self.generator.reset()
             self.grid = self.generator.machete()
@@ -279,4 +300,6 @@ class MazeDisplay:
         """
         Event Handler: Closes the window when the X button is clicked.
         """
+        if self.img is not None:
+            self.mlx.mlx_destroy_image(self.mlx_ptr, self.img)
         self.mlx.mlx_loop_exit(self.mlx_ptr)
