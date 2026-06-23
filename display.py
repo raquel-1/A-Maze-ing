@@ -119,13 +119,13 @@ class MazeDisplay:
         self.img: Any = None
         self.secret_set: Set[Tuple[int, int]] = set(self.four + self.two)
 
-        self.draw_maze()
-        self.mlx.mlx_expose_hook(self.win, self.draw_maze, None)
-        self.mlx.mlx_hook(self.win, 33, 0, self.on_close, None)
-        self.mlx.mlx_key_hook(self.win, self.handle_keyboard, None)
+        self.__draw_maze()
+        self.mlx.mlx_expose_hook(self.win, self.__draw_maze, None)
+        self.mlx.mlx_hook(self.win, 33, 0, self.__on_close, None)
+        self.mlx.mlx_key_hook(self.win, self.__handle_keyboard, None)
         self.mlx.mlx_loop(self.mlx_ptr)
 
-    def draw_maze(self, param: Any = None) -> None:
+    def __draw_maze(self, param: Any = None) -> None:
         """
         Render function: Gets the active palette and draws the maze.
         """
@@ -260,7 +260,7 @@ class MazeDisplay:
         self.mlx.mlx_do_sync(self.mlx_ptr)
         self.is_drawing = False
 
-    def handle_keyboard(self, key: int, param: Any) -> int:
+    def __handle_keyboard(self, key: int, param: Any) -> int:
         """
         Event Handler: Changes the palette index or toggles path visibility.
         """
@@ -276,13 +276,13 @@ class MazeDisplay:
         elif key == 49:
             self.palette_index = (self.palette_index + 1) % len(self.palettes)
             print(f"Palette changed to index: {self.palette_index}")
-            self.draw_maze()
+            self.__draw_maze()
 
         # P o p show/hide path
         elif key == 112:
             self.show_path = not self.show_path
             print(f"Show path state: {self.show_path}")
-            self.draw_maze()
+            self.__draw_maze()
 
         # R o r regenerate maze
         elif key == 114:
@@ -292,11 +292,11 @@ class MazeDisplay:
                 self.grid, self.entry, self.exit
             )
             print(f"Maze regenerated with seed: {self.generator.seed}")
-            self.draw_maze()
+            self.__draw_maze()
 
         return 0
 
-    def on_close(self, param: Any) -> None:
+    def __on_close(self, param: Any) -> None:
         """
         Event Handler: Closes the window when the X button is clicked.
         """
