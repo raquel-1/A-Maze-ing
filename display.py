@@ -52,10 +52,10 @@ class MazeDisplay:
                 "secret_42": 0xFFFFFFFF
             },
             {
-                "wall":      0x4BC2FFFF,
+                "wall":      0xF1F4FFFF,
                 "floor":     0x6B600EFF,
                 "entry":     0xA6971AFF,
-                "exit":      0xF1F4FFFF,
+                "exit":      0x4BC2FFFF,
                 "path":      0xAEB3FFFF,
                 "secret_42": 0x6870F4FF
             },
