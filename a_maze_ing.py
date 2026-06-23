@@ -6,7 +6,7 @@ from mazegen.generator import MazeGenerator
 from path_finder import find_short_path
 from mazegen.exporter import export_maze_to_file
 
-from display_v2 import MazeDisplay
+from display import MazeDisplay
 
 
 def main() -> None:

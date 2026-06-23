@@ -1,113 +1,176 @@
 #!/usr/bin/env python3
 
+from typing import Any, Dict, List, Tuple
 import mlx
-from typing import List, Dict, Any
+from mazegen.generator import MazeGenerator
+from path_finder import find_short_path
 
 
 class MazeDisplay:
     def __init__(
-            self, width: int, height: int, entry: tuple[int, int],
-            exit: tuple[int, int], grid: List[List[int]]
+            self, width: int, height: int, entry: Tuple[int, int],
+            exit: Tuple[int, int], grid: List[List[int]],
+            generator: MazeGenerator
     ) -> None:
         """
         Constructor: Set up dimensions, grid, and color palettes.
         """
         self.width: int = width
         self.height: int = height
-        self.entry = entry
-        self.exit = exit
+        self.entry: Tuple[int, int] = entry
+        self.exit: Tuple[int, int] = exit
         self.grid: List[List[int]] = grid
+        self.generator: MazeGenerator = generator
 
-        # 1. Define your list of available palettes (Lists of dictionaries)
+        self.shortest_path: List[Tuple[int, int]] = find_short_path(
+            self.grid, self.entry, self.exit
+        )
+
         self.palettes: List[Dict[str, int]] = [
-            # Index 0: Classic Palette
-            # white black green red cian darkgrey
             {
-                "wall": 0xFFFFFF,
-                "floor": 0x000000,
-                "entry": 0x00FF00,
-                "exit": 0xFF0000,
-                "path": 0x00FFFF,
-                "secret_42": 0x444444
+                "wall":      0x711F47FF,
+                "floor":     0x19E6FFFF,
+                "entry":     0x6CC00CFF,
+                "exit":      0xD2FAFFFF,
+                "path":      0xF2C659FF,
+                "secret_42": 0x9B81EFFF
             },
-
-            # Index 1: Cyberpunk (Neon Palette)
-            # BrightMagenta Verydarkpurple neongreen electricblue darkpurple
             {
-                "wall": 0xFF00FF,
-                "floor": 0x110022,
-                "entry": 0x00FF00,
-                "exit": 0xFFFF00,
-                "path": 0x00FFFF,
-                "secret_42": 0x330033
+                "wall":      0x2B3623FF,
+                "floor":     0x8CB21BFF,
+                "entry":     0x586AE8FF,
+                "exit":      0x5BD4FEFF,
+                "path":      0xC5C79BFF,
+                "secret_42": 0xEAEEEFFF
+            },
+            {
+                "wall":      0x2F2216FF,
+                "floor":     0xE83F6CFF,
+                "entry":     0xAD4BB6FF,
+                "exit":      0xAD4BB6FF,
+                "path":      0xCBC7C2FF,
+                "secret_42": 0xFFFFFFFF
+            },
+            {
+                "wall":      0x4BC2FFFF,
+                "floor":     0x6B600EFF,
+                "entry":     0xA6971AFF,
+                "exit":      0xF1F4FFFF,
+                "path":      0xAEB3FFFF,
+                "secret_42": 0x6870F4FF
+            },
+            {
+                "wall":      0x00F773FF,
+                "floor":     0xFF1500FF,
+                "entry":     0xFF0084FF,
+                "exit":      0x00FE90FF,
+                "path":      0x00A1FFFF,
+                "secret_42": 0xF7FF00FF
             }
         ]
 
-        self.four: list[tuple[int, int]] = [
-            (0, 0),
-            (0, 1),
-            (0, 2), (1, 2), (2, 2),
-            (2, 3),
-            (2, 4)
+        self.is_drawing: bool = False
+
+        start_x = (self.width - 7) // 2
+        start_y = (self.height - 5) // 2
+
+        self.four: List[Tuple[int, int]] = [
+            (start_x + 0, start_y + 0), (start_x + 0, start_y + 1),
+            (start_x + 0, start_y + 2), (start_x + 1, start_y + 2),
+            (start_x + 2, start_y + 2), (start_x + 2, start_y + 3),
+            (start_x + 2, start_y + 4)
         ]
 
-        self.two: list[tuple[int, int]] = [
-            (4, 0), (5, 0), (6, 0),
-            (6, 1),
-            (4, 2), (5, 2), (6, 2),
-            (4, 3),
-            (4, 4), (5, 4), (6, 4)
+        self.two: List[Tuple[int, int]] = [
+            (start_x + 4, start_y + 0), (start_x + 5, start_y + 0),
+            (start_x + 6, start_y + 0), (start_x + 6, start_y + 1),
+            (start_x + 4, start_y + 2), (start_x + 5, start_y + 2),
+            (start_x + 6, start_y + 2), (start_x + 4, start_y + 3),
+            (start_x + 4, start_y + 4), (start_x + 5, start_y + 4),
+            (start_x + 6, start_y + 4)
         ]
-
-        # 2. Track which palette is currently active (starts at 0)
+        self.has_42: bool = self.width >= 9 and self.height >= 7
         self.palette_index: int = 0
-
-        # 3. Track if the shortest path should be visible or hidden
         self.show_path: bool = False
 
-        # 4. Initialize MiniLibX and create the window
-        self.init_ptr = mlx.init()
-        self.win_ptr = mlx.new_window(...)
+        self.cell_size = 25
+        self.wall_thickness = 5
+        self.menu_height = 90
+        window_w = self.width * self.cell_size
+        window_h = self.height * self.cell_size + self.menu_height
 
-    def draw_maze(self) -> None:
+        self.mlx: Any = mlx.Mlx()
+        self.mlx_ptr: Any = self.mlx.mlx_init()
+        self.win: Any = self.mlx.mlx_new_window(
+            self.mlx_ptr, window_w, window_h, "A-Maze-ing"
+        )
+
+        self.draw_maze()
+        self.mlx.mlx_expose_hook(self.win, self.draw_maze, None)
+        self.mlx.mlx_hook(self.win, 33, 0, self.on_close, None)
+        self.mlx.mlx_key_hook(self.win, self.handle_keyboard, None)
+        self.mlx.mlx_loop(self.mlx_ptr)
+
+    def draw_maze(self, param: Any = None) -> None:
         """
         Render function: Gets the active palette and draws the maze.
         """
+        if self.is_drawing:
+            return
+        self.is_drawing = True
+
         current_palette = self.palettes[self.palette_index]
 
-        # Dimensions for each cell
-        cell_size = 40
-        wall_thickness = 4
+        cell_size = self.cell_size
+        wall_thickness = self.wall_thickness
+
+        # Create image buffer for fast rendering
+        img = self.mlx.mlx_new_image(
+            self.mlx_ptr, self.width * cell_size, self.height * cell_size
+        )
+        data, bpp, size_line, _ = self.mlx.mlx_get_data_addr(img)
+        bytes_per_pixel = bpp // 8
+
+        def put_pixel(x: int, y: int, color: int) -> None:
+            offset = y * size_line + x * bytes_per_pixel
+            # blue (B)
+            data[offset + 0] = (color >> 24) & 0xFF
+            # green (G)
+            data[offset + 1] = (color >> 16) & 0xFF
+            # red (R)
+            data[offset + 2] = (color >> 8) & 0xFF
+            # alpha (A)
+            data[offset + 3] = color & 0xFF
 
         # Loop through each row (Y) and each column (X)
         for y_cell in range(self.height):
             for x_cell in range(self.width):
 
-                # 1. CALCULATE REAL PIXEL COORDINATES
+                # CALCULATE REAL PIXEL COORDINATES
                 x_pixel_start = x_cell * cell_size
                 y_pixel_start = y_cell * cell_size
 
-                # 2. Coger el valor
                 cell_value = self.grid[y_cell][x_cell]
 
-                # 3. CHOOSE AND PAINT BACKGROUND COLOR (Floor / Entry / Exit)
-                # check (x_cell,y_cell) = the entrance or exit to select color
-                if (self.entry == (x_cell, y_cell)):
+                # CHOOSE AND PAINT BACKGROUND COLOR (Floor / Entry / Exit)
+                if self.entry == (x_cell, y_cell):
                     floor_color = current_palette["entry"]
                 elif self.exit == (x_cell, y_cell):
                     floor_color = current_palette["exit"]
-                elif (x_cell, y_cell) in self.four + self.two:
+                # show hide path
+                elif self.show_path and (x_cell, y_cell) in self.shortest_path:
+                    floor_color = current_palette["path"]
+                elif self.has_42 and (x_cell, y_cell) in self.four + self.two:
                     floor_color = current_palette["secret_42"]
                 else:
                     floor_color = current_palette["floor"]
+
                 # Hint: To paint a square chunk of floor, you can use loops
                 for py in range(y_pixel_start, y_pixel_start + cell_size):
                     for px in range(x_pixel_start, x_pixel_start + cell_size):
-                        mlx.pixel_put(
-                            self.init_ptr, self.win_ptr, px, py, floor_color
-                        )
+                        put_pixel(px, py, floor_color)
 
-                # 4. CHECK WALLS USING BITWISE AND (&)
+                # CHECK WALLS USING BITWISE AND (&)
                 wall_color = current_palette["wall"]
 
                 # North Wall (Bit 0 -> Value 1)
@@ -116,14 +179,10 @@ class MazeDisplay:
                         for px in range(
                             x_pixel_start, x_pixel_start + cell_size
                         ):
-                            mlx.pixel_put(
-                                self.init_ptr, self.win_ptr, px,
-                                y_pixel_start + t, wall_color
-                            )
+                            put_pixel(px, y_pixel_start + t, wall_color)
 
                 # East Wall (Bit 1 -> Value 2)
                 if cell_value & 2:
-                    # Dibujamos la línea vertical en el lado derecho
                     for t in range(wall_thickness):
                         for py in range(
                             y_pixel_start, y_pixel_start + cell_size
@@ -132,10 +191,7 @@ class MazeDisplay:
                                 (x_pixel_start + cell_size) - wall_thickness
                                 + t
                             )
-                            mlx.pixel_put(
-                                self.init_ptr, self.win_ptr, x_pos,
-                                py, wall_color
-                            )
+                            put_pixel(x_pos, py, wall_color)
 
                 # South Wall (Bit 2 -> Value 4)
                 if cell_value & 4:
@@ -147,10 +203,7 @@ class MazeDisplay:
                                 ((y_pixel_start + cell_size) - wall_thickness)
                                 + t
                             )
-                            mlx.pixel_put(
-                                self.init_ptr, self.win_ptr, px, y_pos,
-                                wall_color
-                            )
+                            put_pixel(px, y_pos, wall_color)
 
                 # West Wall (Bit 3 -> Value 8)
                 if cell_value & 8:
@@ -158,25 +211,72 @@ class MazeDisplay:
                         for py in range(
                             y_pixel_start, y_pixel_start + cell_size
                         ):
-                            mlx.pixel_put(
-                                self.init_ptr, self.win_ptr, x_pixel_start
-                                + t, py, wall_color
-                            )
+                            put_pixel(x_pixel_start + t, py, wall_color)
+
+        # Push the whole image to window at once
+        self.mlx.mlx_clear_window(self.mlx_ptr, self.win)
+        self.mlx.mlx_put_image_to_window(self.mlx_ptr, self.win, img, 0, 0)
+        self.mlx.mlx_destroy_image(self.mlx_ptr, img)
+        self.mlx.mlx_do_sync(self.mlx_ptr)
+
+        # deaw menu
+        text_color = 0xFFFFFF
+        base_y = self.height * cell_size + 8
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y, text_color, "ESC: quit"
+        )
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y + 16, text_color, "1: colors"
+        )
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y + 32, text_color, "P: path"
+        )
+        self.mlx.mlx_string_put(
+            self.mlx_ptr, self.win, 10, base_y + 48, text_color, "R: regen"
+        )
+
+        self.mlx.mlx_do_sync(self.mlx_ptr)
+
+        self.is_drawing = False
 
     def handle_keyboard(self, key: int, param: Any) -> int:
         """
-        Event Handler: Changes the palette index when key '3' is pressed.
+        Event Handler: Changes the palette index or toggles path visibility.
         """
-        if key == 65307 or key == 27:  # ESC
-            exit(0)
+        if self.is_drawing:
+            return 0
 
-        # Key '3' (usually code 51 in Linux/X11) to change the color palette
-        elif key == 51:
-            # Cycle to the next palette index smoothly using modulo (%)
+        # ESC
+        if key == 65307 or key == 27:
+            self.mlx.mlx_loop_exit(self.mlx_ptr)
+            return 0
+
+        # 1 change colors
+        elif key == 49:
             self.palette_index = (self.palette_index + 1) % len(self.palettes)
             print(f"Palette changed to index: {self.palette_index}")
+            self.draw_maze()
 
-            # CRITICAL: Redraw the maze so changes take effect instantly
+        # P o p show/hide path
+        elif key == 112:
+            self.show_path = not self.show_path
+            print(f"Show path state: {self.show_path}")
+            self.draw_maze()
+
+        # R regenerate maze
+        elif key == 114:
+            self.generator.reset()
+            self.grid = self.generator.machete()
+            self.shortest_path = find_short_path(
+                self.grid, self.entry, self.exit
+            )
+            print(f"Maze regenerated with seed: {self.generator.seed}")
             self.draw_maze()
 
         return 0
+
+    def on_close(self, param: Any) -> None:
+        """
+        Event Handler: Closes the window when the X button is clicked.
+        """
+        self.mlx.mlx_loop_exit(self.mlx_ptr)
