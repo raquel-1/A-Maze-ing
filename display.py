@@ -95,12 +95,12 @@ class MazeDisplay:
 
         # scaling based on grid dimension to fit screen
         if self.width > 70 or self.height > 70:
-            self.cell_size = 10
-            self.wall_thickness = 2
+            self.cell_size = 11
+            self.wall_thickness = 1
         elif self.width >= 50 or self.height >= 50:
             max_dim = max(self.width, self.height)
-            self.cell_size = max(6, 750 // max_dim)
-            self.wall_thickness = max(1, self.cell_size // 4)
+            self.cell_size = max(6, 950 // max_dim)
+            self.wall_thickness = max(1, self.cell_size // 5)
         else:
             self.cell_size = 20
             self.wall_thickness = 3
