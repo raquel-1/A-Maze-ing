@@ -209,6 +209,7 @@ mazegen-1.0.0.tar.gz
 - [X] MLX
 - [X] Crear ventana gráfica
 - [X] CREAR MENU EN LA VENTANA GRAFICA
+- [ ] IMPERFECT NEED  VARIOUS PATH
 
 ---
 

@@ -51,10 +51,10 @@ def parse_config(filepath: str) -> dict[str, object]:
             f"{red}Missing required keys: {', '.join(missing)}{reset}"
         )
 
-    return __validate(raw)
+    return __validate(raw, filename)
 
 
-def __validate(raw: dict[str, str]) -> dict[str, object]:
+def __validate(raw: dict[str, str], config_filename: str) -> dict[str, object]:
     """convert -> validate values"""
     red = "\033[91m"
     reset = "\033[0m"
@@ -103,7 +103,13 @@ def __validate(raw: dict[str, str]) -> dict[str, object]:
     # OUTPUT_FILE
     if not raw["OUTPUT_FILE"]:
         raise ValueError(f"{red}OUTPUT_FILE cannot be empty{reset}")
-    name_no_txt = raw["OUTPUT_FILE"][:-4]  # Quita el '.txt'
+    out_filename = raw["OUTPUT_FILE"].replace('\\', '/').split('/')[-1]
+    if out_filename == config_filename:
+        raise ValueError(
+            f"{red}OUTPUT_FILE cannot be '{config_filename}' to prevent "
+            f"overwriting the config file{reset}"
+        )
+    name_no_txt = raw["OUTPUT_FILE"][:-4]
     if not raw["OUTPUT_FILE"].endswith('.txt') or name_no_txt.strip('.') == "":
         raise ValueError(
             f"{red}OUTPUT_FILE must be a valid filename ending with .txt, "
