@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from mazegen.generator import get_42_cells
+
 
 def parse_config(filepath: str) -> dict[str, object]:
     """read file and extract strings"""
@@ -132,6 +134,19 @@ def __validate(raw: dict[str, str], config_filename: str) -> dict[str, object]:
             )
     else:
         config["seed"] = None
+    # ENTRY/EXIT cant be in 42  walls
+    cells_42 = get_42_cells(width, height)
+    if cells_42:
+        if config["entry"] in cells_42:
+            raise ValueError(
+                f"{red}ENTRY {config['entry']} coincides with a '42' "
+                f"pattern cell{reset}"
+            )
+        if config["exit"] in cells_42:
+            raise ValueError(
+                f"{red}EXIT {config['exit']} coincides with a '42' "
+                f"pattern cell{reset}"
+            )
 
     return config
 

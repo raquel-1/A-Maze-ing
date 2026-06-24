@@ -250,3 +250,32 @@ class MazeGenerator:
         self.my_visited = [
             [False for _ in range(self.width)] for _ in range(self.height)
         ]
+
+
+def get_42_cells(width: int, height: int) -> list[tuple[int, int]]:
+    """Return list of (x, y) cells occupied by the '42' pattern."""
+    if width < 9 or height < 7:
+        return []
+
+    start_x = (width - 7) // 2
+    start_y = (height - 5) // 2
+
+    four: list[tuple[int, int]] = [
+        (0, 0),
+        (0, 1),
+        (0, 2), (1, 2), (2, 2),
+        (2, 3),
+        (2, 4)
+    ]
+    two: list[tuple[int, int]] = [
+        (4, 0), (5, 0), (6, 0),
+        (6, 1),
+        (4, 2), (5, 2), (6, 2),
+        (4, 3),
+        (4, 4), (5, 4), (6, 4)
+    ]
+
+    return [
+        (start_x + x, start_y + y)
+        for x, y in four + two
+    ]
