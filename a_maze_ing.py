@@ -3,7 +3,7 @@
 from typing import cast
 import config_parser
 from mazegen.generator import MazeGenerator
-from path_finder import find_short_path
+from mazegen.path_finder import find_short_path
 from mazegen.exporter import export_maze_to_file
 
 from display import MazeDisplay

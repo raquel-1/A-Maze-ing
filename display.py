@@ -3,7 +3,7 @@
 from typing import Any, Dict, List, Set, Tuple
 import mlx
 from mazegen.generator import MazeGenerator
-from path_finder import find_short_path
+from mazegen.path_finder import find_short_path
 
 
 class MazeDisplay:
@@ -94,7 +94,13 @@ class MazeDisplay:
         self.show_path: bool = False
 
         # scaling based on grid dimension to fit screen
-        if self.width > 70 or self.height > 70:
+        if self.width > 150 or self.height > 150:
+            self.cell_size = 7
+            self.wall_thickness = 1
+        elif self.width > 100 or self.height > 100:
+            self.cell_size = 8
+            self.wall_thickness = 1
+        elif self.width > 70 or self.height > 70:
             self.cell_size = 11
             self.wall_thickness = 1
         elif self.width >= 50 or self.height >= 50:
