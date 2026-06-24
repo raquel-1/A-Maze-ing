@@ -176,18 +176,14 @@ class MazeDisplay:
                 is_entry = self.entry == (x_cell, y_cell)
                 is_exit = self.exit == (x_cell, y_cell)
 
-                # Prioridad 1: Si es la entrada o la salida, se pintan con su color SÍ O SÍ
                 if is_entry:
                     floor_color = current_palette["entry"]
                 elif is_exit:
                     floor_color = current_palette["exit"]
-                # Prioridad 2: Si no es entrada/salida pero el camino pasa por aquí, color path
                 elif self.show_path and (x_cell, y_cell) in path_set:
                     floor_color = current_palette["path"]
-                # Prioridad 3: El dibujo secreto del 42
                 elif self.has_42 and (x_cell, y_cell) in self.secret_set:
                     floor_color = current_palette["secret_42"]
-                # Prioridad 4: El suelo normal
                 else:
                     floor_color = current_palette["floor"]
 
@@ -297,7 +293,7 @@ class MazeDisplay:
             self.shortest_path = find_short_path(
                 self.grid, self.entry, self.exit
             )
-            
+
             # rewite .txt
             export_maze_to_file(
                 filename=self.output_filename,
@@ -306,8 +302,11 @@ class MazeDisplay:
                 maze_map=self.grid,
                 path=self.shortest_path
             )
-            
-            print(f"Maze regenerated and output file updated with seed: {self.generator.seed}")
+
+            print(
+                f"Maze regenerated and output file updated"
+                f" with seed: {self.generator.seed}"
+            )
             self.__draw_maze()
 
         return 0
