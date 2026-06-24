@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Set, Tuple
 import mlx
+from mazegen.exporter import export_maze_to_file
 from mazegen.generator import MazeGenerator
 from mazegen.path_finder import find_short_path
 
@@ -10,7 +11,7 @@ class MazeDisplay:
     def __init__(
             self, width: int, height: int, entry: Tuple[int, int],
             exit: Tuple[int, int], grid: List[List[int]],
-            generator: MazeGenerator
+            generator: MazeGenerator, filename: str
     ) -> None:
         """
         Constructor: Set up dimensions, grid, and color palettes.
@@ -21,6 +22,7 @@ class MazeDisplay:
         self.exit: Tuple[int, int] = exit
         self.grid: List[List[int]] = grid
         self.generator: MazeGenerator = generator
+        self.output_filename: str = filename
 
         self.shortest_path: List[Tuple[int, int]] = find_short_path(
             self.grid, self.entry, self.exit
@@ -44,14 +46,6 @@ class MazeDisplay:
                 "secret_42": 0xEAEEEFFF
             },
             {
-                "wall":      0x2F2216FF,
-                "floor":     0xE83F6CFF,
-                "entry":     0xAD4BB6FF,
-                "exit":      0xAD4BB6FF,
-                "path":      0xCBC7C2FF,
-                "secret_42": 0xFFFFFFFF
-            },
-            {
                 "wall":      0xF1F4FFFF,
                 "floor":     0x6B600EFF,
                 "entry":     0xA6971AFF,
@@ -60,12 +54,12 @@ class MazeDisplay:
                 "secret_42": 0x6870F4FF
             },
             {
-                "wall":      0x00F773FF,
+                "wall":      0x00A1FFFF,
                 "floor":     0xFF1500FF,
                 "entry":     0xFF0084FF,
-                "exit":      0x00FE90FF,
-                "path":      0x00A1FFFF,
-                "secret_42": 0xF7FF00FF
+                "exit":      0xF7FF00FF,
+                "path":      0x00F773FF,
+                "secret_42": 0x00FE90FF
             }
         ]
 
@@ -179,15 +173,21 @@ class MazeDisplay:
                 cell_value = self.grid[y_cell][x_cell]
 
                 # CHOOSE AND PAINT BACKGROUND COLOR (Floor / Entry / Exit)
-                if self.entry == (x_cell, y_cell):
+                is_entry = self.entry == (x_cell, y_cell)
+                is_exit = self.exit == (x_cell, y_cell)
+
+                # Prioridad 1: Si es la entrada o la salida, se pintan con su color SÍ O SÍ
+                if is_entry:
                     floor_color = current_palette["entry"]
-                elif self.exit == (x_cell, y_cell):
+                elif is_exit:
                     floor_color = current_palette["exit"]
-                # show hide path
+                # Prioridad 2: Si no es entrada/salida pero el camino pasa por aquí, color path
                 elif self.show_path and (x_cell, y_cell) in path_set:
                     floor_color = current_palette["path"]
+                # Prioridad 3: El dibujo secreto del 42
                 elif self.has_42 and (x_cell, y_cell) in self.secret_set:
                     floor_color = current_palette["secret_42"]
+                # Prioridad 4: El suelo normal
                 else:
                     floor_color = current_palette["floor"]
 
@@ -297,7 +297,17 @@ class MazeDisplay:
             self.shortest_path = find_short_path(
                 self.grid, self.entry, self.exit
             )
-            print(f"Maze regenerated with seed: {self.generator.seed}")
+            
+            # rewite .txt
+            export_maze_to_file(
+                filename=self.output_filename,
+                entry=self.entry,
+                exit_cell=self.exit,
+                maze_map=self.grid,
+                path=self.shortest_path
+            )
+            
+            print(f"Maze regenerated and output file updated with seed: {self.generator.seed}")
             self.__draw_maze()
 
         return 0

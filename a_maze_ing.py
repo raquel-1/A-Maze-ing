@@ -48,7 +48,8 @@ def main() -> None:
         entry=entry,
         exit=exit_cell,
         grid=map,
-        generator=generator
+        generator=generator,
+        filename=output_file
     )
 
 
