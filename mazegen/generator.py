@@ -157,62 +157,56 @@ class MazeGenerator:
             for nueva_dir in self.my_directions.keys():
                 drop_oil.append((next_x, next_y, nueva_dir))
 
+    def __get_open_directions(self, x: int, y: int) -> list[str]:
+        """list of addresses for open walls"""
+        open_dirs = []
+        cell_value = self.my_map[y][x]
+        if not (cell_value & 1):
+            open_dirs.append("N")
+        if not (cell_value & 2):
+            open_dirs.append("E")
+        if not (cell_value & 4):
+            open_dirs.append("S")
+        if not (cell_value & 8):
+            open_dirs.append("W")
+        return open_dirs
+
     def __more_paths_braiding(self) -> None:
-        """"remove some walls to create imperfect maze"""
-        candidates: list[tuple[int, int, str]] = []
+        """remove walls in the alleys to create the imperfect maze"""
         for y in range(self.height):
             for x in range(self.width):
-                # ignore 42
+                # save 42
                 if self.my_map[y][x] == 15:
                     continue
-                # E
-                if (x + 1) < self.width:
-                    if self.my_map[y][x + 1] != 15:
-                        # show bit value = 2
-                        if self.my_map[y][x] & 2:
-                            candidates.append((x, y, "E"))
-                # S
-                if (y + 1) < self.height:
-                    if self.my_map[y + 1][x] != 15:
-                        # show bit value = 2
-                        if self.my_map[y][x] & 4:
-                            candidates.append((x, y, "S"))
 
-        self.my_rand_seed.shuffle(candidates)
-        walls_to_break = int(len(candidates) * 0.10)
-        for candidate in candidates:
-            x, y, s_e = candidate
-            if s_e == "E":
-                next_x = x + 1
-                _, _, bit_wall, bit_oposite = self.my_directions["E"]
-                self.my_map[y][x] -= bit_wall
-                self.my_map[y][next_x] -= bit_oposite
+                open_walls = self.__get_open_directions(x, y)
 
-                if self.__check_3x3_square():
-                    # delete change
-                    self.my_map[y][x] += bit_wall
-                    self.my_map[y][next_x] += bit_oposite
-                else:
-                    # okk wall stay broken
-                    walls_to_break -= 1
-                    if walls_to_break == 0:
-                        break
+                # dead-end alley
+                if len(open_walls) == 1:
+                    # open close door
+                    possible_dirs = ["N", "E", "S", "W"]
+                    self.my_rand_seed.shuffle(possible_dirs)
 
-            if s_e == "S":
-                next_y = y + 1
-                _, _, bit_wall, bit_oposite = self.my_directions["S"]
-                self.my_map[y][x] -= bit_wall
-                self.my_map[next_y][x] -= bit_oposite
+                    for direction in possible_dirs:
+                        if direction not in open_walls:
+                            dx, dy, bit_wall, bit_oposite = (
+                                self.my_directions[direction]
+                            )
+                            nx, ny = x + dx, y + dy
 
-                if self.__check_3x3_square():
-                    # delete change
-                    self.my_map[y][x] += bit_wall
-                    self.my_map[next_y][x] += bit_oposite
-                else:
-                    # okk wall stay broken
-                    walls_to_break -= 1
-                    if walls_to_break == 0:
-                        break
+                            # limits and not 42
+                            if 0 <= nx < self.width and 0 <= ny < self.height:
+                                if self.my_map[ny][nx] != 15:
+                                    # break an nor 3x3
+                                    self.my_map[y][x] -= bit_wall
+                                    self.my_map[ny][nx] -= bit_oposite
+
+                                    if self.__check_3x3_square():
+                                        self.my_map[y][x] += bit_wall
+                                        self.my_map[ny][nx] += bit_oposite
+                                    else:
+                                        # delete dead-end alley
+                                        break
 
     def __check_3x3_square(self) -> bool:
         for y in range(1, self.height - 1):
