@@ -84,10 +84,10 @@ def __validate(raw: dict[str, str], config_filename: str) -> dict[str, object]:
             f"{red}HEIGHT must be greater than 0, got: {height}{reset}"
         )
     config["height"] = height
-    # MAX 100X100
-    if width > 100 or height > 100:
+    # MAX 170X170
+    if width > 170 or height > 170:
         raise ValueError(
-            f"{red}WIDTH and HEIGHT must be <= 100 for safe rendering, "
+            f"{red}WIDTH and HEIGHT must be <= 170 for safe rendering, "
             f"got: {width}x{height}{reset}"
         )
     # -ENTRY-
