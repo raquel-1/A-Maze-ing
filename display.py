@@ -276,7 +276,9 @@ class MazeDisplay:
 
         # 1 change colors
         elif key == 49:
-            self.palette_index = (self.palette_index + 1) % len(self.palettes)
+            self.palette_index += 1
+            if self.palette_index >= len(self.palettes):
+                self.palette_index = 0
             print(f"Palette changed to index: {self.palette_index}")
             self.__draw_maze()
 
