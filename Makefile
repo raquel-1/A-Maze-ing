@@ -36,7 +36,7 @@ lint:
 	$(VENV)/bin/mypy . --warn-return-any --warn-unused-ignores \
 		--ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
-lint-strict:
+lint-stmarict:
 	$(VENV)/bin/flake8 .
 	$(VENV)/bin/mypy . --strict
 
