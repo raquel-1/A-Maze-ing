@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by raqroca, ceboyero.*
+*This project has been created as part of the 42 curriculum by raqroca-, ceboyero.*
 
 ---
 
@@ -191,7 +191,32 @@ The recursive backtracker produces **perfect mazes** (spanning trees) with long,
 - Naturally produces a single connected maze with no isolated regions
 - Easily seeded for deterministic output
 
-> **Bonus — Prim's algorithm** is also implemented in `__use_prim()` and activates automatically for mazes too small to contain the "42" pattern (width < 9 or height < 7). Prim's generates mazes with a more uniform, branchy structure.
+### 🧩 Bonus — Prim's Algorithm
+
+The Prim's algorithm is implemented in `__use_prim()` and activates automatically for mazes too small to contain the "42" pattern (width < 9 or height < 7). Prim's generates mazes with a more uniform, branchy structure.
+
+**Process:**
+Unlike the DFS which follows a specific route, Prim's maintains a "frontier list" of edges and expands the maze by choosing random connections from that list.
+
+* Start at entry cell → mark visited → add all neighbors to `drop_oil` (frontier list).
+* While `drop_oil` is not empty:
+* Select a random frontier from the list.
+* If the destination cell has not been visited:
+* Remove the wall between the current cell and the neighbor.
+* Mark the neighbor as visited.
+* Add the new cell's neighbors to `drop_oil`.
+
+
+* If already visited, discard the frontier.
+
+
+
+**Why this algorithm?**
+Prim's generates mazes with a more "bushy" appearance, featuring many short branches instead of the long, winding corridors of the DFS. It is ideal for:
+
+* Small spaces where DFS might generate a path that is too direct.
+* Achieving a more homogeneous and dense structure.
+* Offering a visually distinct alternative to standard generation.
 
 ### Imperfect mazes
 
@@ -329,13 +354,13 @@ NSEW...                                ← shortest path as cardinal directions
 
 ### Planning
 
-**Week 1** — Research maze algorithms, design data structures, implement DFS backtracker and basic file export.
+**1** — Research maze algorithms, design data structures, implement DFS backtracker and basic file export.
 
-**Week 2** — Integrate MLX display, implement BFS path finder, add colour palettes and keyboard controls.
+**2** — Integrate MLX display, implement BFS path finder, add colour palettes and keyboard controls.
 
-**Week 3** — Add Prim's algorithm, imperfect maze braiding, 3×3 open-area guard, config validation, and `mazegen` packaging.
+**3** — Add Prim's algorithm, imperfect maze braiding, 3×3 open-area guard, config validation, and `mazegen` packaging.
 
-**Week 4** — Testing, linting (`flake8` + `mypy`), README, and evaluation preparation.
+**4** — Testing, linting (`flake8` + `mypy`), README, and evaluation preparation.
 
 The initial plan was to finish display in week 1, but integrating MLX took longer than expected. We adapted by working in parallel on the generator and display layers.
 
