@@ -159,7 +159,7 @@ class MazeDisplay:
             # alpha (A)
             data[offset + 3] = color & 0xFF
 
-        # O(1) set storage to guarantee zero-lag loop cycles
+        # path in set to make position checks instant during the loop
         path_set: Set[Tuple[int, int]] = set(self.shortest_path)
 
         # loop through each row (Y) and each column (X)
@@ -172,9 +172,16 @@ class MazeDisplay:
 
                 cell_value = self.grid[y_cell][x_cell]
 
-                # CHOOSE AND PAINT BACKGROUND COLOR (Floor / Entry / Exit)
-                is_entry = self.entry == (x_cell, y_cell)
-                is_exit = self.exit == (x_cell, y_cell)
+                # CHOOSE AND PAINT
+                if x_cell == self.entry[0] and y_cell == self.entry[1]:
+                    is_entry = True
+                else:
+                    is_entry = False
+
+                if x_cell == self.exit[0] and y_cell == self.exit[1]:
+                    is_exit = True
+                else:
+                    is_exit = False
 
                 if is_entry:
                     floor_color = current_palette["entry"]
@@ -187,7 +194,7 @@ class MazeDisplay:
                 else:
                     floor_color = current_palette["floor"]
 
-                # Hint: To paint a square chunk of floor, you can use loops
+                # select color for the current cell
                 for py in range(y_pixel_start, y_pixel_start + cell_size):
                     for px in range(x_pixel_start, x_pixel_start + cell_size):
                         put_pixel(px, py, floor_color)
