@@ -35,6 +35,7 @@ build/
 *.swo
 *.whl
 !mlx-2.2-py3-none-any.whl
+!mazegen-1.0.0-py3-none-any.whl
 
 # ==========================================
 # PROJECT OUTPUTS
